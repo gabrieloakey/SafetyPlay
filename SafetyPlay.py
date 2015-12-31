@@ -62,6 +62,10 @@ class MainWindow(QtGui.QMainWindow):
         self.setupActions()
         self.show()
 
+        if len(sys.argv) > 1:
+            self.track_list.add_song([sys.argv[1].replace('\\','/')])
+            self.play_button_clicked()
+
     def volume_up(self):
         if self.movie.audioOutput.volume() < 1.0:
             vol = self.movie.audioOutput.volume()
@@ -135,7 +139,8 @@ class MainWindow(QtGui.QMainWindow):
         self.muter.start()
         self.playing = True
         nm = QtGui.QIcon.Normal
-        self.play_icon.addPixmap('./images/pause.png', nm, QtGui.QIcon.Off)
+        pause = os.path.abspath(os.path.dirname(sys.argv[0])) + '/images/pause.png'
+        self.play_icon.addPixmap(pause, nm, QtGui.QIcon.Off)
         self.play_button.setIcon(self.play_icon)
         self.play_button.setIconSize(QtCore.QSize(48, 48))
         self.greenify()
@@ -171,7 +176,7 @@ class MainWindow(QtGui.QMainWindow):
                 self.muter.start()
                 self.playing = True
                 nm = QtGui.QIcon.Normal
-                ico = './images/pause.png'
+                ico = os.path.abspath(os.path.dirname(sys.argv[0])) + '/images/pause.png'
                 self.play_icon.addPixmap(ico, nm, QtGui.QIcon.Off)
                 self.play_button.setIcon(self.play_icon)
                 self.play_button.setIconSize(QtCore.QSize(48, 48))
@@ -196,7 +201,7 @@ class MainWindow(QtGui.QMainWindow):
                 self.movie.mediaObject.pause()
                 self.paused = True
                 nm = QtGui.QIcon.Normal
-                ico = './images/play.png'
+                ico = os.path.abspath(os.path.dirname(sys.argv[0])) + '/images/play.png'
                 self.play_icon.addPixmap(ico, nm, QtGui.QIcon.Off)
                 self.play_button.setIcon(self.play_icon)
                 self.play_button.setIconSize(QtCore.QSize(48, 48))
@@ -205,7 +210,7 @@ class MainWindow(QtGui.QMainWindow):
                 self.movie.mediaObject.play()
                 self.paused = False
                 nm = QtGui.QIcon.Normal
-                ico = './images/pause.png'
+                ico = os.path.abspath(os.path.dirname(sys.argv[0])) + '/images/pause.png'
                 self.play_icon.addPixmap(ico, nm, QtGui.QIcon.Off)
                 self.play_button.setIcon(self.play_icon)
                 self.play_button.setIconSize(QtCore.QSize(48, 48))
@@ -223,7 +228,7 @@ class MainWindow(QtGui.QMainWindow):
         self.movie.mediaObject.stop()
         self.playing = False
         self.paused = False
-        ico = './images/play.png'
+        ico = os.path.abspath(os.path.dirname(sys.argv[0])) + '/images/play.png'
         self.play_icon.addPixmap(ico, QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.play_button.setIcon(self.play_icon)
         self.play_button.setIconSize(QtCore.QSize(48, 48))
@@ -392,7 +397,7 @@ class MainWindow(QtGui.QMainWindow):
                       'loop' : loop,
                       'shuffle' : shuffle}
                 
-        pickle.dump(dictionary, open('save.p', 'wb'))
+        pickle.dump(dictionary, open(os.path.abspath(os.path.dirname(sys.argv[0])) + '/save.p', 'wb'))
         
     def setupActions(self):
         self.track_list.vol_up.connect(self.volume_up)
@@ -453,7 +458,7 @@ class MainWindow(QtGui.QMainWindow):
         
     def setupUi(self):
         #ICON
-        self.icon_img = './images/icon.ico'
+        self.icon_img = os.path.abspath(os.path.dirname(sys.argv[0])) + '/images/icon.ico'
         self.icon = QtGui.QIcon()
         self.icon.addPixmap(self.icon_img, QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.setWindowIcon(self.icon)
@@ -522,7 +527,7 @@ class MainWindow(QtGui.QMainWindow):
         #Play Button
         self.play_button = QtGui.QPushButton(self.centralwidget)
         self.play_icon = QtGui.QIcon()
-        self.play_icon.addPixmap('./images/play.png', QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.play_icon.addPixmap(os.path.abspath(os.path.dirname(sys.argv[0])) + '/images/play.png', QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.play_button.setIcon(self.play_icon)
         self.play_button.setIconSize(QtCore.QSize(48, 48))
         self.play_button.setMinimumSize(QtCore.QSize(48, 48))
@@ -535,7 +540,7 @@ class MainWindow(QtGui.QMainWindow):
         #Revert Button
         self.revert_button = QtGui.QPushButton(self.centralwidget)
         self.revert_icon = QtGui.QIcon()
-        self.revert_icon.addPixmap('./images/revert.png', QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.revert_icon.addPixmap(os.path.abspath(os.path.dirname(sys.argv[0])) + '/images/revert.png', QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.revert_button.setIcon(self.revert_icon)
         self.revert_button.setIconSize(QtCore.QSize(48, 48))
         self.revert_button.setMinimumSize(QtCore.QSize(48, 48))
@@ -548,7 +553,7 @@ class MainWindow(QtGui.QMainWindow):
         #Stop Button
         self.stop_button = QtGui.QPushButton(self.centralwidget)
         self.stop_icon = QtGui.QIcon()
-        self.stop_icon.addPixmap('./images/stop.png', QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.stop_icon.addPixmap(os.path.abspath(os.path.dirname(sys.argv[0])) + '/images/stop.png', QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.stop_button.setIcon(self.stop_icon)
         self.stop_button.setIconSize(QtCore.QSize(48, 48))
         self.stop_button.setMinimumSize(QtCore.QSize(48, 48))
@@ -561,7 +566,7 @@ class MainWindow(QtGui.QMainWindow):
         #Skip Button
         self.skip_button = QtGui.QPushButton(self.centralwidget)
         self.skip_icon = QtGui.QIcon()
-        self.skip_icon.addPixmap('./images/skip.png', QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.skip_icon.addPixmap(os.path.abspath(os.path.dirname(sys.argv[0])) + '/images/skip.png', QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.skip_button.setIcon(self.skip_icon)
         self.skip_button.setIconSize(QtCore.QSize(48, 48))
         self.skip_button.setMinimumSize(QtCore.QSize(48, 48))
@@ -574,7 +579,7 @@ class MainWindow(QtGui.QMainWindow):
         #Loop Button
         self.loop_button = QtGui.QPushButton(self.centralwidget)
         self.loop_icon = QtGui.QIcon()
-        self.loop_icon.addPixmap('./images/loop.png', QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.loop_icon.addPixmap(os.path.abspath(os.path.dirname(sys.argv[0])) + '/images/loop.png', QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.loop_button.setIcon(self.loop_icon)
         self.loop_button.setIconSize(QtCore.QSize(48, 48))
         self.loop_button.setMinimumSize(QtCore.QSize(48, 48))
@@ -588,7 +593,7 @@ class MainWindow(QtGui.QMainWindow):
         #Shuffle Button
         self.shuffle_button = QtGui.QPushButton(self.centralwidget)
         self.shuffle_icon = QtGui.QIcon()
-        self.shuffle_icon.addPixmap('./images/shuffle.png', QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.shuffle_icon.addPixmap(os.path.abspath(os.path.dirname(sys.argv[0])) + '/images/shuffle.png', QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.shuffle_button.setIcon(self.shuffle_icon)
         self.shuffle_button.setIconSize(QtCore.QSize(48, 48))
         self.shuffle_button.setMinimumSize(QtCore.QSize(48, 48))
@@ -1233,7 +1238,7 @@ def default_dictionary():
 
 def load():
     try :
-        dictionary = pickle.load(open('save.p', 'rb'))
+        dictionary = pickle.load(open(os.path.abspath(os.path.dirname(sys.argv[0])) + '/save.p', 'rb'))
     except FileNotFoundError:
         dictionary = default_dictionary()
     return dictionary

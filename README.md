@@ -52,7 +52,7 @@ In this example, the player will skip the video from 8 seconds to 10.6 seconds. 
 4. run: python.exe setup.py build
 5. Go to the build folder and add vulgar.txt and the 'images' folder.
 
-##Ready Made Builds
+##Download
 
 ###Windows 64bit
-[Version 1.2](https://drive.google.com/file/d/0ByCbzbfsSzJLRUE0ZWphMlNRSTg/view?usp=sharing)
+[SafetyPlay Version 1.3](https://drive.google.com/file/d/0ByCbzbfsSzJLY2NqMGZqdzlYRUU/view?usp=sharing)

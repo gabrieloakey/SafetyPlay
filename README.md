@@ -1,4 +1,4 @@
-#SafetyPlay![alt tag](http://imgur.com/a/dosWv)
+#SafetyPlay ![Alt text](assets/icon.png)
 
 Edit your movies without changing the source file.
 
@@ -7,7 +7,7 @@ To play some filetypes on Windows, you'll need to install a codec pack such as [
 
 To play a media file in SafetyPlay, drag it into the playlist window and double click or press play.
 
-'''
+```
 Keyboard Shortcuts
 P = Play/Pause
 R = Revert to last playlist item
@@ -21,7 +21,7 @@ Scroll Wheel Up = Volume Up
 Scroll Wheel Down = Volume Down
 F (on video Window) = Fullscreen
 Esc = Undo Fullscreen
-'''
+```
 
 ##Subtitles
 .srt files are text files that hold subtitles for a movie. For most movies, .srt files can be downloaded online. Upon opening a video file, SafetyPlay will look for a .srt file in the same folder as the video file and will attempt to load a .srt file into the SRT dialogue window. To be loaded automatically, the srt file must have the same file name as the video. Only certain filetypes such as .Mp4 will allow subtitles to be played during video playback.

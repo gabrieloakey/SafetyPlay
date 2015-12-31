@@ -12,9 +12,9 @@ import datetime
 #                                                                             #
 ###############################################################################
 
-class MainWindow(QtGui.QMainWindow):
+class MainWindow(QtGui.QWidget):
     def __init__(self):
-        QtGui.QMainWindow.__init__(self)
+        QtGui.QWidget.__init__(self)
         self.playing = False
         self.paused = False
         self.played = set()
@@ -25,6 +25,7 @@ class MainWindow(QtGui.QMainWindow):
         self.movie.audioOutput.setVolume(self.settings['volume'])
         
         self.setupUi()
+        self.cti_slider.installEventFilter(self)
 
         self.movie.setWindowTitle('Safety Play - Video')
         self.movie.setWindowIcon(self.icon)
@@ -82,7 +83,21 @@ class MainWindow(QtGui.QMainWindow):
         
     def skipleft(self):
         ct = self.movie.mediaObject.currentTime()
-        self.movie.mediaObject.seek(ct - 5000)
+        if ct - 5000 > 0:
+            self.movie.mediaObject.seek(ct - 5000)
+        else:
+            self.movie.mediaObject.seek(0)
+
+    def jogright(self):
+        ct = self.movie.mediaObject.currentTime()
+        self.movie.mediaObject.seek(ct + 334)
+
+    def jogleft(self):
+        ct = self.movie.mediaObject.currentTime()
+        if ct - 334 > 0:
+            self.movie.mediaObject.seek(ct - 334)
+        else:
+            self.movie.mediaObject.seek(0)
         
     def greenify(self):
         for i in range(self.track_list.count()):
@@ -162,12 +177,13 @@ class MainWindow(QtGui.QMainWindow):
             self.srt_window.add_srt(srt)
         
     def play_button_clicked(self):
+        self.track_list.setFocus()
         if self.track_list.count() > 0:
+            item = self.get_current_playing()
+            it = item.data(QtCore.Qt.UserRole)
             if not self.playing and not self.paused:
-                item = self.get_current_playing()
                 if item.text() == '':
                     item = self.track_list.item(0)
-                it = item.data(QtCore.Qt.UserRole)
                 self.movie.mediaObject.setQueue([it])
                 self.played.add(item.data(QtCore.Qt.UserRole))
                 item.setData(QtCore.Qt.AccessibleDescriptionRole, 'nowplaying')
@@ -181,17 +197,6 @@ class MainWindow(QtGui.QMainWindow):
                 self.play_button.setIcon(self.play_icon)
                 self.play_button.setIconSize(QtCore.QSize(48, 48))
                 self.greenify()
-
-                saf = item.data(QtCore.Qt.UserRole)[:len(it) - 3] + 'saf'
-                if os.path.isfile(saf):
-                    skp, mut, img = self.get_special_times(saf)
-                    self.skip_times = skp
-                    self.mute_times = mut
-                    self.image_times = img
-                else:
-                    self.skip_times = []
-                    self.mute_times = []
-                    self.image_times = []
 
                 srt = item.data(QtCore.Qt.UserRole)[:len(it) - 3] + 'srt'
                 if os.path.isfile(srt):
@@ -214,17 +219,34 @@ class MainWindow(QtGui.QMainWindow):
                 self.play_icon.addPixmap(ico, nm, QtGui.QIcon.Off)
                 self.play_button.setIcon(self.play_icon)
                 self.play_button.setIconSize(QtCore.QSize(48, 48))
+
+            saf = item.data(QtCore.Qt.UserRole)[:len(it) - 3] + 'saf'
+            if os.path.isfile(saf):
+                skp, mut, img = self.get_special_times(saf)
+                self.skip_times = skp
+                self.mute_times = mut
+                self.image_times = img
+            else:
+                self.skip_times = []
+                self.mute_times = []
+                self.image_times = []
             
 
     def revert_music(self):
-        for i in range(self.track_list.count()):
-            ar = QtCore.Qt.AccessibleDescriptionRole
-            if self.track_list.item(i).data(ar) == 'nowplaying':
-                if i > 0:
-                    item = self.track_list.item(i - 1)
-        self.play_doubleclicked(item)
+        self.track_list.setFocus()
+        if self.track_list.count() > 1:
+            item_found = False
+            for i in range(self.track_list.count()):
+                ar = QtCore.Qt.AccessibleDescriptionRole
+                if self.track_list.item(i).data(ar) == 'nowplaying':
+                    if i > 0:
+                        item = self.track_list.item(i - 1)
+                        item_found = True
+            if item_found:
+                self.play_doubleclicked(item)
 
     def stop_music(self):
+        self.track_list.setFocus()
         self.movie.mediaObject.stop()
         self.playing = False
         self.paused = False
@@ -234,12 +256,17 @@ class MainWindow(QtGui.QMainWindow):
         self.play_button.setIconSize(QtCore.QSize(48, 48))
 
     def skip_music(self):
-        for i in range(self.track_list.count()):
-            it = QtCore.Qt.AccessibleDescriptionRole
-            if self.track_list.item(i).data(it) == 'nowplaying':
-                if i < self.track_list.count() - 1:
-                    item = self.track_list.item(i + 1)
-        self.play_doubleclicked(item)
+        self.track_list.setFocus()
+        if self.track_list.count() > 1:
+            item_found = False
+            for i in range(self.track_list.count()):
+                it = QtCore.Qt.AccessibleDescriptionRole
+                if self.track_list.item(i).data(it) == 'nowplaying':
+                    if i < self.track_list.count() - 1:
+                        item = self.track_list.item(i + 1)
+                        item_found = True
+            if item_found:
+                self.play_doubleclicked(item)
 
     def jump_to(self, time):
         seconds = convert_to_seconds(time)
@@ -352,7 +379,20 @@ class MainWindow(QtGui.QMainWindow):
             t = self.movie.mediaObject.currentTime()/1000
             time = '[' + sec_to_minutes_seconds(t) + ']'
             self.saf_window.plainTextEdit.insertPlainText(time)
-    
+
+    def refocus(self):
+        self.track_list.setFocus()
+
+    def eventFilter(self, obj, event):
+        if obj is self.cti_slider and event.type() == QtCore.QEvent.ShortcutOverride:
+            # Send the event up the hierarchy
+            event.ignore()
+            # Stop obj from treating the event itself
+            return True
+
+        # Events which don't concern us get forwarded
+        return super(MainWindow, self).eventFilter(obj, event)
+        
     def closeEvent(self, event):
         self.muter.terminate()
         self.movie.mediaObject.stop()
@@ -404,6 +444,8 @@ class MainWindow(QtGui.QMainWindow):
         self.track_list.vol_down.connect(self.volume_down)
         self.track_list.skipright.connect(self.skipright)
         self.track_list.skipleft.connect(self.skipleft)
+        self.track_list.jogright.connect(self.jogright)
+        self.track_list.jogleft.connect(self.jogleft)
         self.track_list.play_pause.connect(self.play_button_clicked)
         self.track_list.revert.connect(self.revert_music)
         self.track_list.stop.connect(self.stop_music)
@@ -426,10 +468,15 @@ class MainWindow(QtGui.QMainWindow):
         self.saf_checkbox.clicked.connect(self.toggle_saf)
 
         self.subtitles_checkbox.clicked.connect(self.save)
+        self.subtitles_checkbox.clicked.connect(self.refocus)
         self.video_checkbox.clicked.connect(self.save)
+        self.video_checkbox.clicked.connect(self.refocus)
         self.saf_checkbox.clicked.connect(self.save)
+        self.saf_checkbox.clicked.connect(self.refocus)
         self.loop_button.clicked.connect(self.save)
+        self.loop_button.clicked.connect(self.refocus)
         self.shuffle_button.clicked.connect(self.save)
+        self.shuffle_button.clicked.connect(self.refocus)
         self.movie.audioOutput.volumeChanged.connect(self.save)
         self.movie.moving.connect(self.save)
         self.movie.resizing.connect(self.save)
@@ -438,6 +485,8 @@ class MainWindow(QtGui.QMainWindow):
 
         self.movie.skipright.connect(self.skipright)
         self.movie.skipleft.connect(self.skipleft)
+        self.movie.jogright.connect(self.jogright)
+        self.movie.jogleft.connect(self.jogleft)
         self.movie.vol_up.connect(self.volume_up)
         self.movie.vol_down.connect(self.volume_down)
         self.movie.play_pause.connect(self.play_button_clicked)
@@ -455,6 +504,13 @@ class MainWindow(QtGui.QMainWindow):
         self.saf_window.resizing.connect(self.save)
         self.saf_window.saf_exit.connect(self.uncheck_saf)
         self.saf_window.save_request.connect(self.send_save)
+
+        self.cti_slider.play_pause.connect(self.play_button_clicked)
+        self.cti_slider.revert.connect(self.revert_music)
+        self.cti_slider.stop.connect(self.stop_music)
+        self.cti_slider.jump.connect(self.skip_music)
+        self.cti_slider.jogright.connect(self.jogright)
+        self.cti_slider.jogleft.connect(self.jogleft)
         
     def setupUi(self):
         #ICON
@@ -464,69 +520,68 @@ class MainWindow(QtGui.QMainWindow):
         self.setWindowIcon(self.icon)
         
         #Window Settings
-        self.setObjectName("MainWindow")
         self.setWindowTitle('Safety Play - Playlist')
-        #self.resize(454, 442)
-        self.centralwidget = QtGui.QWidget()
-        self.centralwidget.setObjectName("centralwidget")
-        self.verticalLayout = QtGui.QVBoxLayout(self.centralwidget)
+        self.verticalLayout = QtGui.QVBoxLayout(self)
         self.verticalLayout.setObjectName("verticalLayout")
 
         #Track List
-        self.track_list = SongList(self.centralwidget)
+        self.track_list = SongList(self)
         self.track_list.setObjectName("track_list")
         self.verticalLayout.addWidget(self.track_list)
 
         #CTI Slider
-        self.horizontalLayout_2 = QtGui.QHBoxLayout()
+        self.horizontalLayout_2 = QtGui.QHBoxLayout(self)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
-        self.cti_slider = Phonon.SeekSlider(self)
+        self.cti_slider = CTI()#Phonon.SeekSlider(self)
         self.cti_slider.setMediaObject(self.movie.mediaObject)
         self.cti_slider.setOrientation(QtCore.Qt.Horizontal)
         self.cti_slider.setObjectName("cti_slider")
-        self.cti_slider.setPageStep(250)
+        self.cti_slider.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.cti_slider.setSingleStep(5000)
         self.horizontalLayout_2.addWidget(self.cti_slider)
 
         #Current Time
-        self.current_time = QtGui.QLabel(self.centralwidget)
+        self.current_time = QtGui.QLabel(self)
         self.current_time.setObjectName("current_time")
         self.current_time.setText("00:00:00,000")
         self.horizontalLayout_2.addWidget(self.current_time)
 
         #More Layouts
         self.verticalLayout.addLayout(self.horizontalLayout_2)
-        self.horizontalLayout_3 = QtGui.QHBoxLayout()
+        self.horizontalLayout_3 = QtGui.QHBoxLayout(self)
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
 
         #SAF Checkbox
-        self.saf_checkbox = QtGui.QCheckBox(self.centralwidget)
+        self.saf_checkbox = QtGui.QCheckBox(self)
         self.saf_checkbox.setObjectName("saf_checkbox")
         self.saf_checkbox.setText("SAF Dialogue")
         self.saf_checkbox.setChecked(self.settings['saf'])
+        self.saf_checkbox.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.horizontalLayout_3.addWidget(self.saf_checkbox)
 
         #subtitles Checkbox
-        self.subtitles_checkbox = QtGui.QCheckBox(self.centralwidget)
+        self.subtitles_checkbox = QtGui.QCheckBox(self)
         self.subtitles_checkbox.setObjectName("subtitles_checkbox")
         self.subtitles_checkbox.setText("SRT Dialogue")
         self.subtitles_checkbox.setChecked(self.settings['srt'])
+        self.subtitles_checkbox.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.horizontalLayout_3.addWidget(self.subtitles_checkbox)
 
         #Video Checkbox
-        self.video_checkbox = QtGui.QCheckBox(self.centralwidget)
+        self.video_checkbox = QtGui.QCheckBox(self)
         self.video_checkbox.setObjectName("visualizer_checkbox")
         self.video_checkbox.setText("Video Window")
         self.video_checkbox.setChecked(self.settings['video'])
+        self.video_checkbox.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.horizontalLayout_3.addWidget(self.video_checkbox)
 
         #More Layouts
         self.verticalLayout.addLayout(self.horizontalLayout_3)
-        self.horizontalLayout = QtGui.QHBoxLayout()
+        self.horizontalLayout = QtGui.QHBoxLayout(self)
         self.horizontalLayout.setObjectName("horizontalLayout")
 
         #Play Button
-        self.play_button = QtGui.QPushButton(self.centralwidget)
+        self.play_button = QtGui.QPushButton(self)
         self.play_icon = QtGui.QIcon()
         self.play_icon.addPixmap(os.path.abspath(os.path.dirname(sys.argv[0])) + '/images/play.png', QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.play_button.setIcon(self.play_icon)
@@ -535,11 +590,11 @@ class MainWindow(QtGui.QMainWindow):
         self.play_button.setMaximumSize(QtCore.QSize(48, 48))
         self.play_button.setText("")
         self.play_button.setObjectName("play_button")
-        #self.play_button.setEnabled(False)
+        self.play_button.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.horizontalLayout.addWidget(self.play_button)
 
         #Revert Button
-        self.revert_button = QtGui.QPushButton(self.centralwidget)
+        self.revert_button = QtGui.QPushButton(self)
         self.revert_icon = QtGui.QIcon()
         self.revert_icon.addPixmap(os.path.abspath(os.path.dirname(sys.argv[0])) + '/images/revert.png', QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.revert_button.setIcon(self.revert_icon)
@@ -548,11 +603,12 @@ class MainWindow(QtGui.QMainWindow):
         self.revert_button.setMaximumSize(QtCore.QSize(48, 48))
         self.revert_button.setText("")
         self.revert_button.setObjectName("revert_button")
+        self.revert_button.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.horizontalLayout.addWidget(self.revert_button)
         #self.revert_button.setEnabled(False)
         
         #Stop Button
-        self.stop_button = QtGui.QPushButton(self.centralwidget)
+        self.stop_button = QtGui.QPushButton(self)
         self.stop_icon = QtGui.QIcon()
         self.stop_icon.addPixmap(os.path.abspath(os.path.dirname(sys.argv[0])) + '/images/stop.png', QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.stop_button.setIcon(self.stop_icon)
@@ -561,11 +617,12 @@ class MainWindow(QtGui.QMainWindow):
         self.stop_button.setMaximumSize(QtCore.QSize(48, 48))
         self.stop_button.setText("")
         self.stop_button.setObjectName("stop_button")
+        self.stop_button.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.horizontalLayout.addWidget(self.stop_button)
         #self.stop_button.setEnabled(False)
 
         #Skip Button
-        self.skip_button = QtGui.QPushButton(self.centralwidget)
+        self.skip_button = QtGui.QPushButton(self)
         self.skip_icon = QtGui.QIcon()
         self.skip_icon.addPixmap(os.path.abspath(os.path.dirname(sys.argv[0])) + '/images/skip.png', QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.skip_button.setIcon(self.skip_icon)
@@ -574,11 +631,12 @@ class MainWindow(QtGui.QMainWindow):
         self.skip_button.setMaximumSize(QtCore.QSize(48, 48))
         self.skip_button.setText("")
         self.skip_button.setObjectName("skip_button")
+        self.skip_button.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.horizontalLayout.addWidget(self.skip_button)
         #self.skip_button.setEnabled(False)
 
         #Loop Button
-        self.loop_button = QtGui.QPushButton(self.centralwidget)
+        self.loop_button = QtGui.QPushButton(self)
         self.loop_icon = QtGui.QIcon()
         self.loop_icon.addPixmap(os.path.abspath(os.path.dirname(sys.argv[0])) + '/images/loop.png', QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.loop_button.setIcon(self.loop_icon)
@@ -589,10 +647,11 @@ class MainWindow(QtGui.QMainWindow):
         self.loop_button.setObjectName("loop_button")
         self.loop_button.setCheckable(True)
         self.loop_button.setChecked(self.settings['loop'])
+        self.loop_button.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.horizontalLayout.addWidget(self.loop_button)
         
         #Shuffle Button
-        self.shuffle_button = QtGui.QPushButton(self.centralwidget)
+        self.shuffle_button = QtGui.QPushButton(self)
         self.shuffle_icon = QtGui.QIcon()
         self.shuffle_icon.addPixmap(os.path.abspath(os.path.dirname(sys.argv[0])) + '/images/shuffle.png', QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.shuffle_button.setIcon(self.shuffle_icon)
@@ -603,6 +662,7 @@ class MainWindow(QtGui.QMainWindow):
         self.shuffle_button.setObjectName("shuffle_button")
         self.shuffle_button.setCheckable(True)
         self.shuffle_button.setChecked(self.settings['shuffle'])
+        self.shuffle_button.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.horizontalLayout.addWidget(self.shuffle_button)
 
         #Volume Slider
@@ -610,19 +670,61 @@ class MainWindow(QtGui.QMainWindow):
         self.volume_slider.setAudioOutput(self.movie.audioOutput)
         self.volume_slider.setObjectName("volume_slider")
         self.volume_slider.setMinimumSize(QtCore.QSize(100, 0))
+        self.volume_slider.setFocusPolicy(QtCore.Qt.ClickFocus)
+        self.volume_slider.setMuteVisible(False)
         self.horizontalLayout.addWidget(self.volume_slider)
+        
 
-        #Menus ??
         self.verticalLayout.addLayout(self.horizontalLayout)
-        self.setCentralWidget(self.centralwidget)
-        self.menubar = QtGui.QMenuBar()
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 475, 26))
-        self.menubar.setObjectName("menubar")
-        self.setMenuBar(self.menubar)
-        self.statusbar = QtGui.QStatusBar()
-        self.statusbar.setObjectName("statusbar")
-        self.setStatusBar(self.statusbar)
 
+class CTI(Phonon.SeekSlider):
+    play_pause = QtCore.Signal()
+    revert = QtCore.Signal()
+    stop = QtCore.Signal()
+    jump = QtCore.Signal()
+    jogright = QtCore.Signal()
+    jogleft = QtCore.Signal()
+    
+    def __init__(self, parent=None):
+        super(CTI, self).__init__(parent)
+        shortcut_r = QtGui.QShortcut(QtGui.QKeySequence('Right'), self)
+        shortcut_r.setContext(QtCore.Qt.ApplicationShortcut)
+        shortcut_r.activated.connect(self.test)
+
+        shortcut_l = QtGui.QShortcut(QtGui.QKeySequence('Left'), self)
+        shortcut_l.setContext(QtCore.Qt.ApplicationShortcut)
+        shortcut_l.activated.connect(self.test)
+
+        shortcut_sr = QtGui.QShortcut(QtGui.QKeySequence('Shift+Right'), self)
+        shortcut_sr.setContext(QtCore.Qt.ApplicationShortcut)
+        shortcut_sr.activated.connect(self.jogright_fxn)
+
+        shortcut_sl = QtGui.QShortcut(QtGui.QKeySequence('Shift+Left'), self)
+        shortcut_sl.setContext(QtCore.Qt.ApplicationShortcut)
+        shortcut_sl.activated.connect(self.jogright_fxn)
+
+    def test(self):
+        pass
+
+    def jogright_fxn(self):
+        self.jogright.emit()
+
+    def jogleft_fxn(self):
+        self.jogleft.emit()
+            
+    def keyPressEvent(self, event):
+        if event.key() == QtCore.Qt.Key_P:
+            self.play_pause.emit()
+
+        elif event.key() == QtCore.Qt.Key_R:
+            self.revert.emit()
+
+        elif event.key() == QtCore.Qt.Key_S:
+            self.stop.emit()
+
+        elif event.key() == QtCore.Qt.Key_J:
+            self.jump.emit()
+        
 ###############################################################################
 #                                                                             #
 #                                  PLAYLIST                                   #
@@ -640,12 +742,15 @@ class SongList(QtGui.QListWidget):
     deleted = QtCore.Signal(object)
     skipright = QtCore.Signal()
     skipleft = QtCore.Signal()
+    jogright = QtCore.Signal()
+    jogleft = QtCore.Signal()
     vol_up = QtCore.Signal()
     vol_down = QtCore.Signal()
     play_pause = QtCore.Signal()
     revert = QtCore.Signal()
     stop = QtCore.Signal()
     jump = QtCore.Signal()
+    
     
     def __init__(self, parent=None):
         super(SongList, self).__init__(parent)
@@ -742,6 +847,12 @@ class SongList(QtGui.QListWidget):
         elif event.key() == QtCore.Qt.Key_Left and QtGui.QApplication.keyboardModifiers() == QtCore.Qt.AltModifier:
             self.skipleft.emit()
 
+        elif event.key() == QtCore.Qt.Key_Left and QtGui.QApplication.keyboardModifiers() == QtCore.Qt.ShiftModifier:
+            self.jogleft.emit()
+
+        elif event.key() == QtCore.Qt.Key_Right and QtGui.QApplication.keyboardModifiers() == QtCore.Qt.ShiftModifier:
+            self.jogright.emit()
+            
         #Pause/Play, revert, stop, jump
         elif event.key() == QtCore.Qt.Key_P:
             self.play_pause.emit()
@@ -798,6 +909,8 @@ class Movie(Phonon.VideoWidget):
 
     skipright = QtCore.Signal()
     skipleft = QtCore.Signal()
+    jogright = QtCore.Signal()
+    jogleft = QtCore.Signal()
     vol_up = QtCore.Signal()
     vol_down = QtCore.Signal()
     play_pause = QtCore.Signal()
@@ -849,6 +962,12 @@ class Movie(Phonon.VideoWidget):
 
         elif event.key() == QtCore.Qt.Key_Left and QtGui.QApplication.keyboardModifiers() == QtCore.Qt.AltModifier:
             self.skipleft.emit()
+
+        elif event.key() == QtCore.Qt.Key_Left and QtGui.QApplication.keyboardModifiers() == QtCore.Qt.ShiftModifier:
+            self.jogleft.emit()
+
+        elif event.key() == QtCore.Qt.Key_Right and QtGui.QApplication.keyboardModifiers() == QtCore.Qt.ShiftModifier:
+            self.jogright.emit()
 
         #Pause/Play, revert, stop, jump
         elif event.key() == QtCore.Qt.Key_P:
@@ -1350,9 +1469,8 @@ def check_vulgar(vulgars, s):
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
-    app.setApplicationName("Music Player")
+    app.setApplicationName("Media Player")
     app.setQuitOnLastWindowClosed(True)
-
     window = MainWindow()
 
     sys.exit(app.exec_())

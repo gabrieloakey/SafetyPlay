@@ -17,8 +17,8 @@ S = Stop
 J = Jump to next playlist item
 Alt + Right Arrow = Shuttle Forward
 Alt + Left Arrow = Shuttle Backward
-Scroll Wheel Up (on slider) = Jog Forward
-Scroll Wheel Down (on slider) = Jog Backward
+Shift + Right Arrow = Jog Forward
+Shift + Left Arrow = Jog Backward
 Scroll Wheel Up = Volume Up
 Scroll Wheel Down = Volume Down
 F (on video Window) = Fullscreen
@@ -55,4 +55,4 @@ In this example, the player will skip the video from 8 seconds to 10.6 seconds. 
 ##Download
 
 ###Windows 64bit
-[SafetyPlay Version 1.4](https://drive.google.com/file/d/0ByCbzbfsSzJLS001UTEwejlfbk0/view?usp=sharing)
+[SafetyPlay Version 1.5](https://drive.google.com/file/d/0ByCbzbfsSzJLdjZqSmxmdzRFNU0/view?usp=sharing)

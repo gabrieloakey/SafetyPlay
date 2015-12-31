@@ -1,6 +1,8 @@
-#SafetyPlay ![Alt text](assets/icon.png)
+![Alt text](assets/all_panels.png)
 
-Edit your movies without changing the source file.
+#SafetyPlay ![Alt text](assets/small.png)
+
+Edit your movies without changing the source file. Users create a text file with instructions on when to skip, mute, or black out media during playback. SafetyPlay plays the video according to the text file's instructions.
 
 ##Playing Media
 To play some filetypes on Windows, you'll need to install a codec pack such as [K-Lite Mega](http://www.free-codecs.com/download/k_lite_mega_codec_pack.htm). Be careful during installation as they will invite you to install internet toolbars etc. 
@@ -28,7 +30,9 @@ Esc = Undo Fullscreen
 
 To open the srt dialogue, check the box near the playlist window. 
 
-SafetyPlay automatically searches through the words in a .srt file and compares them to a library of vulgar words located in a .txt file located in the same directory as SafetyPlay.exe. When a match is found, the line is highlighted. You can jump to any spot in a playing video by doubleclicking the line in the SRT dialogue. You can add or remove vulgar words from the vulgar.txt to match your own preferences.
+SafetyPlay automatically searches through the words in a .srt file and compares them to a library of vulgar words located in a .txt file located in the same directory as SafetyPlay.exe. When a match is found, the line is highlighted in pink. You can jump to any spot in a playing video by doubleclicking the line in the SRT dialogue. You can add or remove vulgar words from the vulgar.txt to match your own preferences.
+
+![Alt text](assets/SRT.png)
 
 ##Editing Media 
 .saf files hold information that enables SafetyPlay to censor media. They are text files and can be opened and edited using any text editor. The built in text editor can be enabled by checking the box 'srt dialogue'. Drag and drop the .saf file you want to edit or load a video and begin editing the saf file for that video. Each line in a saf file must have a beginning time code, an end timecode, and an instruction. for example:
@@ -39,6 +43,8 @@ In this example, the player will skip the video from 8 seconds to 10.6 seconds. 
 
 .saf files must be stored in the same location as the video file and must have the same filename.
 
+![Alt text](assets/SAF.png)
+
 ##Building SafetyPlay
 1. Install [Python](https://www.python.org/), [PySide](https://pypi.python.org/pypi/PySide/1.2.4), and Phonon
 2. Install [Cx_Freeze](http://cx-freeze.sourceforge.net/)
@@ -46,4 +52,7 @@ In this example, the player will skip the video from 8 seconds to 10.6 seconds. 
 4. run: python.exe setup.py build
 5. Go to the build folder and add vulgar.txt and the 'images' folder.
 
+##Ready Made Builds
 
+###Windows 64bit
+[Version 1.2](https://drive.google.com/file/d/0ByCbzbfsSzJLRUE0ZWphMlNRSTg/view?usp=sharing)

@@ -32,7 +32,7 @@ Ctrl + Down Arrow = Move selected item(s) down in playlist
 
 To open the srt dialogue, check the box near the playlist window. 
 
-SafetyPlay automatically searches through the words in a .srt file and compares them to a library of vulgar words located in a .txt file located in the same directory as SafetyPlay.exe. When a match is found, the line is highlighted in pink. You can jump to any spot in a playing video by doubleclicking the line in the SRT dialogue. You can add or remove vulgar words from the vulgar.txt to match your own preferences.
+SafetyPlay automatically searches through the words in a .srt file and compares them to a library of vulgar words located in a .txt file in the same directory as SafetyPlay.exe. When a match is found, the line is highlighted in pink. You can jump to any spot in a playing video by doubleclicking the line in the SRT dialogue. You can add or remove vulgar words from the vulgar.txt to match your own preferences.
 
 ![Alt text](assets/SRT.png)
 
@@ -56,5 +56,5 @@ In this example, the player will skip the video from 8 seconds to 10.6 seconds. 
 
 ##Download
 
-###Windows 64bit
-[SafetyPlay Version 1.5](https://drive.google.com/file/d/0ByCbzbfsSzJLdjZqSmxmdzRFNU0/view?usp=sharing)
+####Windows 64bit
+[SafetyPlay Version 1.6](https://drive.google.com/file/d/0ByCbzbfsSzJLMzdrSEY1U3U0Smc/view?usp=sharing)

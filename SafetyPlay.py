@@ -167,6 +167,7 @@ class MainWindow(QtGui.QWidget):
             self.skip_times = skp
             self.mute_times = mut
             self.image_times = img
+            self.saf_window.add_file(saf)
         else:
             self.skip_times = []
             self.mute_times = []
@@ -226,6 +227,7 @@ class MainWindow(QtGui.QWidget):
                 self.skip_times = skp
                 self.mute_times = mut
                 self.image_times = img
+                self.saf_window.add_file(saf)
             else:
                 self.skip_times = []
                 self.mute_times = []
@@ -677,6 +679,12 @@ class MainWindow(QtGui.QWidget):
 
         self.verticalLayout.addLayout(self.horizontalLayout)
 
+###############################################################################
+#                                                                             #
+#                                 CTI SLIDER                                  #
+#                                                                             #
+###############################################################################
+
 class CTI(Phonon.SeekSlider):
     play_pause = QtCore.Signal()
     revert = QtCore.Signal()
@@ -695,13 +703,53 @@ class CTI(Phonon.SeekSlider):
         shortcut_l.setContext(QtCore.Qt.ApplicationShortcut)
         shortcut_l.activated.connect(self.test)
 
+        shortcut_u = QtGui.QShortcut(QtGui.QKeySequence('Up'), self)
+        shortcut_u.setContext(QtCore.Qt.ApplicationShortcut)
+        shortcut_u.activated.connect(self.test)
+
+        shortcut_d = QtGui.QShortcut(QtGui.QKeySequence('Down'), self)
+        shortcut_d.setContext(QtCore.Qt.ApplicationShortcut)
+        shortcut_d.activated.connect(self.test)
+
+        shortcut_cr = QtGui.QShortcut(QtGui.QKeySequence('ctrl+Right'), self)
+        shortcut_cr.setContext(QtCore.Qt.ApplicationShortcut)
+        shortcut_cr.activated.connect(self.test)
+
+        shortcut_cl = QtGui.QShortcut(QtGui.QKeySequence('ctrl+Left'), self)
+        shortcut_cl.setContext(QtCore.Qt.ApplicationShortcut)
+        shortcut_cl.activated.connect(self.test)
+
+        shortcut_cu = QtGui.QShortcut(QtGui.QKeySequence('ctrl+Up'), self)
+        shortcut_cu.setContext(QtCore.Qt.ApplicationShortcut)
+        shortcut_cu.activated.connect(self.test)
+
+        shortcut_cd = QtGui.QShortcut(QtGui.QKeySequence('ctrl+Down'), self)
+        shortcut_cd.setContext(QtCore.Qt.ApplicationShortcut)
+        shortcut_cd.activated.connect(self.test)
+
+        shortcut_su = QtGui.QShortcut(QtGui.QKeySequence('Shift+Up'), self)
+        shortcut_su.setContext(QtCore.Qt.ApplicationShortcut)
+        shortcut_su.activated.connect(self.test)
+
+        shortcut_sd = QtGui.QShortcut(QtGui.QKeySequence('Shift+Down'), self)
+        shortcut_sd.setContext(QtCore.Qt.ApplicationShortcut)
+        shortcut_sd.activated.connect(self.test)
+
+        shortcut_au = QtGui.QShortcut(QtGui.QKeySequence('alt+Up'), self)
+        shortcut_au.setContext(QtCore.Qt.ApplicationShortcut)
+        shortcut_au.activated.connect(self.test)
+
+        shortcut_ad = QtGui.QShortcut(QtGui.QKeySequence('alt+Down'), self)
+        shortcut_ad.setContext(QtCore.Qt.ApplicationShortcut)
+        shortcut_ad.activated.connect(self.test)
+
         shortcut_sr = QtGui.QShortcut(QtGui.QKeySequence('Shift+Right'), self)
         shortcut_sr.setContext(QtCore.Qt.ApplicationShortcut)
         shortcut_sr.activated.connect(self.jogright_fxn)
 
         shortcut_sl = QtGui.QShortcut(QtGui.QKeySequence('Shift+Left'), self)
         shortcut_sl.setContext(QtCore.Qt.ApplicationShortcut)
-        shortcut_sl.activated.connect(self.jogright_fxn)
+        shortcut_sl.activated.connect(self.jogright_fxn)   
 
     def test(self):
         pass

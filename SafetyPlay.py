@@ -484,7 +484,8 @@ class MainWindow(QtGui.QMainWindow):
         self.cti_slider.setMediaObject(self.movie.mediaObject)
         self.cti_slider.setOrientation(QtCore.Qt.Horizontal)
         self.cti_slider.setObjectName("cti_slider")
-        self.cti_slider.setPageStep(100)
+        self.cti_slider.setPageStep(250)
+        self.cti_slider.setSingleStep(5000)
         self.horizontalLayout_2.addWidget(self.cti_slider)
 
         #Current Time

@@ -23,6 +23,8 @@ Scroll Wheel Up = Volume Up
 Scroll Wheel Down = Volume Down
 F (on video Window) = Fullscreen
 Esc = Undo Fullscreen
+Ctrl + Up Arrow = Move selected item(s) up in playlist
+Ctrl + Down Arrow = Move selected item(s) down in playlist
 ```
 
 ##Subtitles

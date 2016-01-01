@@ -1,4 +1,6 @@
-![Alt text](assets/all_panels.png)[SafetyPlay Video Tutorial](https://www.youtube.com/watch?v=teZHPcFaoA4)
+![Alt text](assets/all_panels.png)
+
+[SafetyPlay Video Tutorial](https://www.youtube.com/watch?v=teZHPcFaoA4)
 
 #SafetyPlay ![Alt text](assets/small.png)
 

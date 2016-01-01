@@ -749,7 +749,7 @@ class CTI(Phonon.SeekSlider):
 
         shortcut_sl = QtGui.QShortcut(QtGui.QKeySequence('Shift+Left'), self)
         shortcut_sl.setContext(QtCore.Qt.ApplicationShortcut)
-        shortcut_sl.activated.connect(self.jogright_fxn)   
+        shortcut_sl.activated.connect(self.jogleft_fxn)   
 
     def test(self):
         pass

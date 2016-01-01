@@ -182,6 +182,9 @@ class MainWindow(QtGui.QWidget):
         if self.track_list.count() > 0:
             item = self.get_current_playing()
             it = item.data(QtCore.Qt.UserRole)
+            if it == None:
+                item = self.track_list.item(0)
+                it = item.data(QtCore.Qt.UserRole)
             if not self.playing and not self.paused:
                 if item.text() == '':
                     item = self.track_list.item(0)
@@ -1209,6 +1212,7 @@ class SafDialogue(QtGui.QWidget):
 
     def text_was_changed(self):
         self.text_edited = True
+        print('changed')
 
     def record(self):
         self.record_request.emit()
@@ -1223,7 +1227,7 @@ class SafDialogue(QtGui.QWidget):
             if not lines[i] == '' and not lines[i].startswith('#'):
                 checked.append(lines[i])
         lines = checked
-        
+
         for i in range(len(lines)):
             if not lines[i].endswith('skip') and not lines[i].endswith('mute') and not lines[i].endswith('.jpg') and not lines[i] == '':
                 self.highlight(self.get_index(lines, i), i)
@@ -1281,6 +1285,7 @@ class SafDialogue(QtGui.QWidget):
 
     def hide_save(self):
         self.save_message.hide()
+        self.text_edited = False
 
     def highlight(self, index, line):
         cursor = self.plainTextEdit.textCursor()
@@ -1321,6 +1326,7 @@ class SafDialogue(QtGui.QWidget):
             for i in range(len(lines)):
                 string = string + lines[i]
             self.plainTextEdit.appendPlainText(string)
+            self.text_edited = False
         except FileNotFoundError:
             pass
 

@@ -160,9 +160,9 @@ class MainWindow(QtGui.QWidget):
         self.play_button.setIconSize(QtCore.QSize(48, 48))
         self.greenify()
         it = item.data(QtCore.Qt.UserRole)
-        saf = item.data(QtCore.Qt.UserRole)[:len(it) - 3] + 'saf'
         
-        if os.path.isfile(saf):
+        saf = item.data(QtCore.Qt.UserRole)[:len(it) - 3] + 'saf'
+        if os.path.isfile(saf) and self.saf_window.text_edited == False:
             skp, mut, img = self.get_special_times(saf)
             self.skip_times = skp
             self.mute_times = mut
@@ -222,7 +222,7 @@ class MainWindow(QtGui.QWidget):
                 self.play_button.setIconSize(QtCore.QSize(48, 48))
 
             saf = item.data(QtCore.Qt.UserRole)[:len(it) - 3] + 'saf'
-            if os.path.isfile(saf):
+            if os.path.isfile(saf) and self.saf_window.text_edited == False:
                 skp, mut, img = self.get_special_times(saf)
                 self.skip_times = skp
                 self.mute_times = mut
@@ -1173,6 +1173,7 @@ class SafDialogue(QtGui.QWidget):
         self.safelist = ['.saf']
 
         self.current_file = ""
+        self.text_edited = False
         
         self.vl = QtGui.QVBoxLayout(self)
         self.plainTextEdit = QtGui.QPlainTextEdit()
@@ -1204,6 +1205,10 @@ class SafDialogue(QtGui.QWidget):
         self.sort_button.clicked.connect(self.sort)
         self.record_button.clicked.connect(self.record)
         self.save_closer.time_up.connect(self.hide_save)
+        self.plainTextEdit.textChanged.connect(self.text_was_changed)
+
+    def text_was_changed(self):
+        self.text_edited = True
 
     def record(self):
         self.record_request.emit()
@@ -1215,7 +1220,7 @@ class SafDialogue(QtGui.QWidget):
         lines = self.plainTextEdit.toPlainText().split('\n')
         checked = []
         for i in range(len(lines)):
-            if not lines[i] == '':
+            if not lines[i] == '' and not lines[i].startswith('#'):
                 checked.append(lines[i])
         lines = checked
         
@@ -1261,6 +1266,7 @@ class SafDialogue(QtGui.QWidget):
         self.save_message.resize(self.width(), self.height())
         self.save_message.show()
         self.save_closer.start()
+        self.text_edited = False
 
         lines = self.plainTextEdit.toPlainText().split('\n')
         index = 0

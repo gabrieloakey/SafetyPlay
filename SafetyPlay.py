@@ -714,14 +714,6 @@ class CTI(Phonon.SeekSlider):
         shortcut_d.setContext(QtCore.Qt.ApplicationShortcut)
         shortcut_d.activated.connect(self.test)
 
-        shortcut_cr = QtGui.QShortcut(QtGui.QKeySequence('ctrl+Right'), self)
-        shortcut_cr.setContext(QtCore.Qt.ApplicationShortcut)
-        shortcut_cr.activated.connect(self.test)
-
-        shortcut_cl = QtGui.QShortcut(QtGui.QKeySequence('ctrl+Left'), self)
-        shortcut_cl.setContext(QtCore.Qt.ApplicationShortcut)
-        shortcut_cl.activated.connect(self.test)
-
         shortcut_cu = QtGui.QShortcut(QtGui.QKeySequence('ctrl+Up'), self)
         shortcut_cu.setContext(QtCore.Qt.ApplicationShortcut)
         shortcut_cu.activated.connect(self.test)
@@ -898,6 +890,12 @@ class SongList(QtGui.QListWidget):
         elif event.key() == QtCore.Qt.Key_Left and QtGui.QApplication.keyboardModifiers() == QtCore.Qt.AltModifier:
             self.skipleft.emit()
 
+        elif event.key() == QtCore.Qt.Key_Right and QtGui.QApplication.keyboardModifiers() == QtCore.Qt.ControlModifier:
+            self.skipright.emit()
+
+        elif event.key() == QtCore.Qt.Key_Left and QtGui.QApplication.keyboardModifiers() == QtCore.Qt.ControlModifier:
+            self.skipleft.emit()
+            
         elif event.key() == QtCore.Qt.Key_Left and QtGui.QApplication.keyboardModifiers() == QtCore.Qt.ShiftModifier:
             self.jogleft.emit()
 

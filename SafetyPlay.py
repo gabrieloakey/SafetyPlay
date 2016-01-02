@@ -1222,14 +1222,12 @@ class SafDialogue(QtGui.QWidget):
 
     def check_errors(self):
         lines = self.plainTextEdit.toPlainText().split('\n')
-        """checked = []
-        for i in range(len(lines)):
-            if not lines[i] == '' and not lines[i].startswith('#'):
-                checked.append(lines[i])
-        lines = checked"""
 
         for i in range(len(lines)):
-            if not lines[i].endswith('skip') and not lines[i].endswith('mute') and not lines[i].endswith('.jpg') and not lines[i] == '' and not lines[i].startswith('#'):
+            if (not lines[i].endswith('skip')
+                and not lines[i].endswith('mute') and not
+                lines[i].endswith('.jpg') and not lines[i] == ''
+                and not lines[i].startswith('#')):
                 self.highlight(self.get_index(lines, i), i)
                 return False
         

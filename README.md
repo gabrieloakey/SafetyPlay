@@ -59,7 +59,7 @@ In this example, the player will skip the video from 8 seconds to 10.6 seconds. 
 ##Download
 
 ####Windows 64bit
-[SafetyPlay win64 1.9](https://drive.google.com/file/d/0ByCbzbfsSzJLTmJRYWl3aU5KRTA/view?usp=sharing)
+[SafetyPlay win64 2.0](https://drive.google.com/file/d/0ByCbzbfsSzJLdE9ZUGpiczhrLU0/view?usp=sharing)
 
 ##Donate
 If you find SafetyPlay useful, please consider making a donation to the developer. Thanks!
